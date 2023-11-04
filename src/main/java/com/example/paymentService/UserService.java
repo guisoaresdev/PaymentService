@@ -1,4 +1,4 @@
-package com.example.paymentService.service;
+package com.example.paymentService;
 
 import com.example.paymentService.repository.UserRepository;
 import com.example.paymentService.model.User;

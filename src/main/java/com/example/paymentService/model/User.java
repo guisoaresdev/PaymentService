@@ -5,8 +5,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
@@ -14,10 +16,18 @@ public class User {
     private String name;
     private BigDecimal balance; // Saldo do usuário
 
+    public User() {
+    }
+
+    public User(String name, BigDecimal balance) {
+        this.name = name;
+        this.balance = balance;
+    }
+
     public Long getId() {
         return this.id;
     }
-
+    
     // NAME
     public String getName() {
         return this.name;
@@ -34,5 +44,6 @@ public class User {
 
     public void setBalance(BigDecimal balance) {
         this.balance = balance;
-    } 
+    }
+
 }
