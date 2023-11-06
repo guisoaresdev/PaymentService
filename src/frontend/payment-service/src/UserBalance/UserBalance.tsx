@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './UserBalance.css';
 
 const UserBalance: React.FC = () => {
   const [userId, setUserId] = useState<number | null>(null);
@@ -7,10 +8,14 @@ const UserBalance: React.FC = () => {
   const [balance, setBalance] = useState(0);
   const [receivedAmount, setReceivedAmount] = useState(0);
   const [paidAmount, setPaidAmount] = useState(0);
+  const [newUserName, setNewUserName] = useState('');
+  const [initialBalance, setInitialBalance] = useState(0);
+  const [paymentHistory, setPaymentHistory] = useState([]);
+  const [paymentId, setPaymentId] = useState<number | null>(null); // Estado para atualizar o histórico de pagamentos
 
   useEffect(() => {
     if (userId) {
-      axios.get(`http://localhost:3000/user/${userId}`)
+      axios.get(`http://localhost:8080/users/${userId}`)
         .then((response) => {
           setUserName(response.data.name);
           setBalance(response.data.balance);
@@ -21,9 +26,22 @@ const UserBalance: React.FC = () => {
     }
   }, [userId]);
 
+  useEffect(() => {
+    if (balance) {
+      axios.get(`http://localhost:8080/users/${userId}/payment-history`)
+        .then((response) => {
+          setPaymentHistory(response.data);
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.error('Erro ao obter o histórico de pagamentos:', error);
+        });
+    }
+  }, [balance]);
+
   const handleReceivePayment = () => {
     if (userId) {
-      axios.post(`http://localhost:3000/receive-payment/${userId}`, {
+      axios.post(`http://localhost:8080/users/${userId}/receive-payment`, {
         amount: receivedAmount,
       })
       .then((response) => {
@@ -39,7 +57,7 @@ const UserBalance: React.FC = () => {
 
   const handleMakePayment = () => {
     if (userId) {
-      axios.post(`http://localhost:3000/make-payment/${userId}`, {
+      axios.post(`http://localhost:8080/users/${userId}/make-payment`, {
         amount: paidAmount,
       })
       .then((response) => {
@@ -54,9 +72,16 @@ const UserBalance: React.FC = () => {
   };
 
   const createUser = () => {
-    axios.post('http://localhost:3000/create-user')
+    const userDetails = {
+      name: newUserName,
+      balance: initialBalance,
+    };
+    
+    axios.post('http://localhost:8080/users/create-user', userDetails)
       .then((response) => {
-        setUserId(response.data.userId);
+        setUserId(response.data);
+        setUserName(newUserName);
+        setBalance(initialBalance);
       })
       .catch((error) => {
         console.error('Erro ao criar usuário:', error);
@@ -64,7 +89,7 @@ const UserBalance: React.FC = () => {
   };
 
   return (
-    <div>
+    <div id="modalContainer">
       {userId ? (
         <>
           <h2>Detalhes da conta</h2>
@@ -86,9 +111,32 @@ const UserBalance: React.FC = () => {
             />
             <button onClick={handleMakePayment}>Fazer Pagamento</button>
           </div>
+          <h2>Histórico de Pagamentos</h2>
+          <ul>
+            {paymentHistory.map((payment: any) => (
+              <li key={payment.id}>
+                {payment.isSum ? '+' : '-' }{payment.amount} em {payment.timestamp}
+              </li>
+            ))}
+          </ul>
         </>
       ) : (
-        <button onClick={createUser}>Criar Usuário</button>
+        <div>
+          <h2>Criar Usuário</h2>
+          <input
+            type="text"
+            value={newUserName}
+            onChange={(e) => setNewUserName(e.target.value)}
+            placeholder="Nome do usuário"
+          />
+          <input
+            type="number"
+            value={initialBalance}
+            onChange={(e) => setInitialBalance(+e.target.value)}
+            placeholder="Balanço inicial"
+          />
+          <button onClick={createUser}>Criar Usuário</button>
+        </div>
       )}
     </div>
   );
