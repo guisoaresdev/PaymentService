@@ -37,7 +37,7 @@ public class UserServiceTest {
 
         // Recebendo um pagamento de 100
         BigDecimal paymentAmount = new BigDecimal("100.00");
-        userService.receivePayment(savedUser.getId(), paymentAmount);
+        userService.receivePayment(savedUser.getId(), paymentAmount, true);
 
         // Buscando o usuário após receber o pagamento
         User userAfterReceive = userRepository.findById(savedUser.getId()).orElse(null);
@@ -47,7 +47,7 @@ public class UserServiceTest {
 
         // Realizando um pagamento de 50
         BigDecimal withdrawalAmount = new BigDecimal("50.00");
-        userService.makePayment(savedUser.getId(), withdrawalAmount);
+        userService.makePayment(savedUser.getId(), withdrawalAmount, false);
 
         // Buscando o usuário após fazer o pagamento
         User userAfterPayment = userRepository.findById(savedUser.getId()).orElse(null);
