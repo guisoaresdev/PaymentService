@@ -6,14 +6,19 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import jakarta.persistence.EntityNotFoundException;
 
-// TO DO: Resolver problema com o UserRepository onde o extend pro JPA tá incorreto de alguma forma
-
 @Service
 public class UserService {
     private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    // Cria um novo usuário
+    public Long createUser(String name, BigDecimal initialBalance) {
+        User newUser = new User(name, initialBalance);
+        User savedUser = userRepository.save(newUser);
+        return savedUser.getId();
     }
 
     // Receber Pagamento
@@ -29,6 +34,5 @@ public class UserService {
         user.setBalance(user.getBalance().subtract(amount));
         userRepository.save(user);
     }
-
-    // Outros métodos conforme necessário para manipular o histórico, etc.
+    
 }
