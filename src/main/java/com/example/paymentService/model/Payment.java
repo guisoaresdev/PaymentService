@@ -20,16 +20,16 @@ public class Payment {
 
     private LocalDateTime timestamp;
 
-    private boolean isSum;
+    private boolean operation;
 
     public Payment() {
     }
 
-    public Payment(Long userId, BigDecimal amount, LocalDateTime timestamp, boolean isSum) {
+    public Payment(Long userId, BigDecimal amount, LocalDateTime timestamp, boolean operation) {
         this.userId = userId;
         this.amount = amount;
         this.timestamp = timestamp;
-        this.isSum = isSum;
+        this.operation = operation;
     }
 
     public Long getId() {
@@ -60,11 +60,11 @@ public class Payment {
         this.timestamp = timestamp;
     }
 
-    public boolean getIsSum() {
-        return this.isSum;
+    public boolean getOperation() {
+        return this.operation;
     }
     
-    public void setIsSum(boolean isSum) {
-        this.isSum = isSum;
+    public void setOperation(boolean isSum) {
+        this.operation = operation;
     }
 }

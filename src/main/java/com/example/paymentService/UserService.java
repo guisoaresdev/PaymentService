@@ -29,12 +29,12 @@ public class UserService {
     }
 
     // Armazena histórico de pagamentos
-    public void storePaymentHistory(Long userId, BigDecimal amount, boolean isSum) {
+    public void storePaymentHistory(Long userId, BigDecimal amount, boolean operation) {
         Payment payment = new Payment();
         payment.setUserId(userId);
         payment.setAmount(amount);
         payment.setTimestamp(LocalDateTime.now());
-        payment.setIsSum(isSum);
+        payment.setOperation(operation);
 
         paymentRepository.save(payment);
     }
