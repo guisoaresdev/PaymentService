@@ -1,3 +1,4 @@
+package com.example.paymentService.utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -6,6 +7,7 @@ import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.UUID;
+
 
 public class TokenUtils {
 
@@ -17,6 +19,8 @@ public class TokenUtils {
         // Decodifica o token JWT
         byte[] decodedBytes = Base64.getDecoder().decode(token);
         String decodedToken = new String(decodedBytes, StandardCharsets.UTF_8);
+
+        System.out.println("Decoded Token: " + decodedToken);
 
         // Parse do token JWT para obter as informações (claims)
         Jws<Claims> claimsJws = Jwts.parserBuilder()
