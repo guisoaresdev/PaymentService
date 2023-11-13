@@ -1,4 +1,4 @@
-#PaymentService
+## PaymentService
 A payment service developed using Java with Spring Boot and React TypeScript
 
 ## Project Structure
