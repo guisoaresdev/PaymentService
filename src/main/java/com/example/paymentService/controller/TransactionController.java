@@ -25,7 +25,8 @@ public class TransactionController {
         return TokenUtils.extractUserIdFromToken(authorizationHeader);
     }
 
-    @Operation(summary = "Pega o histórico de transações do usuário")
+    @Produces(MediaType.TEXT_PLAIN)
+    @Operation(summary = "Pega o histórico de transações do usuário", description="Utiliza do Bearer para validar o token")
     @RequestMapping(value = "/history", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<List<Transaction>> getTransactionHistory(
             @RequestHeader(name = "Authorization") String authorizationHeader) {
@@ -41,35 +42,37 @@ public class TransactionController {
         }
     }
 
-    @PostMapping("/{userId}/receive-payment/{amount}")
-    @PreAuthorize("#userId == principal.username")
-    public ResponseEntity<String> receivePayment(
-            @PathVariable(value = "amount") Number amount, @PathVariable(value = "userId") UUID userId) {
+    @Produces(MediaType.TEXT_PLAIN)
+    @Operation(summary = "Recebe uma transação assinada pelo user")
+    @PostMapping("/credit/{amount}")
+    public ResponseEntity<String> Credit(
+        @RequestHeader(name = "Authorization") String sender, @PathVariable(value = "amount") Number amount) {
         if (isAuthenticatedUser(userId)) {
-            transactionService.receivePayment(userId, amount);
+            transactionService.credit(sender, amount);
             return ResponseEntity.ok("Payment received successfully: " + amount);
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
 
-    @PostMapping("/{userId}/make-payment/{amount}")
-    @PreAuthorize("#userId == principal.username")
-    public ResponseEntity<String> makePayment(
-            @PathVariable(value = "amount") Number amount, @PathVariable(value = "userId") UUID userId) {
-        if (isAuthenticatedUser(userId)) {
-            transactionService.makePayment(userId, amount);
+    @Produces(MediaType.TEXT_PLAIN)
+    @Operation(summary = "Realiza uma transação assinada pelo user")
+    @PostMapping("/debit/{amount}")
+    public ResponseEntity<String> Debit(
+          @RequestHeader(name = "Authorization") UUID sender, @PathVariable(value = "amount") Number amount) {
+        if (isAuthenticatedUser(sender)) {
+            transactionService.debit(sender, amount);
             return ResponseEntity.ok("Payment made successfully: " + amount);
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
 
+    @Operation(summary = "Resgata o balanço do usuário")
     @GetMapping("/{userId}/balance")
-    @PreAuthorize("#userId == principal.username")
-    public ResponseEntity<Number> getUserBalance(@PathVariable(value = "userId") UUID userId) {
+    public ResponseEntity<Number> UserBalance(@RequestHeader(name = "Authorization") UUID sender) {
         if (isAuthenticatedUser(userId)) {
-            Number balance = transactionService.getUserBalance(userId);
+            Number balance = transactionService.UserBalance(userId);
             return ResponseEntity.ok(balance);
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

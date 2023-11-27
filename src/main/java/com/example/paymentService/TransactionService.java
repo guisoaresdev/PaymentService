@@ -2,12 +2,12 @@ package com.example.paymentService;
 
 import com.example.paymentService.repository.TransactionRepository;
 import com.example.paymentService.model.Transaction;
+import com.example.paymentService.model.TransactionStatus;
 import com.example.paymentService.model.TransactionType;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-
 
 @Service
 public class TransactionService {
@@ -16,7 +16,6 @@ public class TransactionService {
 
     public TransactionService(TransactionRepository transactionRepository) {
         this.transactionRepository = transactionRepository;
-        // MOCKUP USER
     }
 
     public void storeTransaction(UUID userId, Number amount, TransactionType type) {
@@ -24,40 +23,39 @@ public class TransactionService {
         transactionRepository.save(transaction);
     }
 
-    public List<Transaction> getTransactionHistory(UUID userId) {
+    public List<Transaction> transactionHistory(UUID userId) {
         List<Transaction> transactions = transactionRepository.findByUserId(userId);
-
-        // Calcular saldo
         Number balance = getUserBalance(userId);
 
-        // Adicionar uma transação fictícia de saldo ao histórico
-        Transaction saldoTransaction = new Transaction(userId, 3400, LocalDateTime.now(), TransactionType.SALDO);
+        Transaction saldoTransaction = new Transaction(userId, 3400, LocalDateTime.now(), TransactionType.SALDO, UUID.randomUUID());
         transactions.add(saldoTransaction);
 
         return transactions;
     }
 
-    public Number getUserBalance(UUID userId) {
+    public Array<Number> UserBalance(UUID userId) {
         List<Transaction> transactions = transactionRepository.findByUserId(userId);
+        
+        Array<Number> balance;
+        Number pendingTransactions = 0;
+        Number currentBalance = 0;
 
-        // Calcular saldo
-        Number saldo = 0;
         for (Transaction transaction : transactions) {
-            if (transaction.getType() == TransactionType.CREDIT) {
-                saldo =+ (int) transaction.getAmount();
+            if (transaction.getType() == TransactionType.CREDIT && transaction.getStatus() == TransactionStatus.PENDING) {
+                balance[0].pendingTransactions =+ (int) transaction.getAmount();
             } else if (transaction.getType() == TransactionType.DEBIT) {
-                saldo =+ (int) transaction.getAmount();
+                balance[1].currentBalance =+ (int) transaction.getAmount();
             }
         }
 
-        return saldo;
+        return balance;
     }
 
-    public void receivePayment(UUID userId, Number amount) {
+    public void credit(UUID userId, Number amount) {
         storeTransaction(userId, amount, TransactionType.CREDIT);
     }
 
-    public void makePayment(UUID userId, Number amount) {
+    public void debit(UUID userId, Number amount) {
         storeTransaction(userId, amount, TransactionType.DEBIT);
     }
 }
