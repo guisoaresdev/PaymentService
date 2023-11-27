@@ -14,6 +14,17 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import java.lang.Number;
 
+public enum TransactionStatus {
+    PENDING, APPROVED, REJECTED
+}
+
+public enum TransactionType {
+    DEBIT,
+    CREDIT,
+    SALDO
+}
+
+
 @Entity
 @Table
 public class Transaction {
@@ -23,11 +34,14 @@ public class Transaction {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "userId")
-    private UUID userId;
+    @Column(name = "sender")
+    private UUID sender;
 
     @Column(name = "amount")
     private Number amount;
+
+    @Column(name = "receiver")
+    private UUID receiver;
 
     @Column(name = "timestamp")
     private LocalDateTime timestamp;
@@ -36,14 +50,19 @@ public class Transaction {
     @Column(name="type")
     private TransactionType type;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private TransactionStatus status;
+
     public Transaction() {
     }
 
-    public Transaction(UUID userId, Number amount, LocalDateTime timestamp, TransactionType type) {
-        this.userId = userId;
+    public Transaction(UUID sender, Number amount,  LocalDateTime timestamp, TransactionType type, UUID receiver) {
+        this.sender = sender;
         this.amount = amount;
         this.timestamp = timestamp;
         this.type = type;
+        this.receiver = receiver;
     }
 
     // Getters e Setters
@@ -52,8 +71,12 @@ public class Transaction {
         return id;
     }
 
-    public UUID getUserId() {
-        return userId;
+    public UUID getSender() {
+        return sender;
+    }
+
+    public void setSender(UUID sender) {
+        this.sender = sender;
     }
 
     public Number getAmount() {
@@ -62,6 +85,14 @@ public class Transaction {
 
     public void setAmount(Number amount) {
         this.amount = amount;
+    }
+
+    public UUID getReceiver() {
+        return receiver;
+    }
+
+    public void setReceiver(UUID receiver) {
+        this.receiver = receiver;
     }
 
     public LocalDateTime getTimestamp() {
@@ -78,5 +109,13 @@ public class Transaction {
 
     public void setType(TransactionType type) {
         this.type = type;
+    }
+
+    public TransactionStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TransactionStatus status) {
+        this.status = status;
     }
 }
